@@ -1,16 +1,14 @@
 name: Peachycloud Security Trivy non-blocking (SARIF upload)
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:
 
 permissions:
   contents: read
   security-events: write
   pull-requests: write
+  issues: write
 
 jobs:
   trivy_non_blocking:
@@ -50,7 +48,8 @@ jobs:
           severity: CRITICAL,HIGH,MEDIUM,LOW
 
       - name: Post or update PR comment with Trivy table
-        if: github.event_name == 'pull_request'
+        # Fork PRs get a read-only token: skip comment (SARIF step may still be limited).
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: trivy-container-scan
