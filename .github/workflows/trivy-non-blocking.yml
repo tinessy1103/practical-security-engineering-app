@@ -1,13 +1,16 @@
-name: Peachycloudsecurity Trivy non-blocking (SARIF upload)
+name: Peachycloud Security Trivy non-blocking (SARIF upload)
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
   security-events: write
+  pull-requests: write
 
 jobs:
   trivy_non_blocking:
@@ -35,3 +38,21 @@ jobs:
         with:
           sarif_file: trivy-results.sarif
           category: trivy-container
+
+      - name: Run Trivy (table for PR comment)
+        if: github.event_name == 'pull_request'
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: devsecops-python-app:${{ github.sha }}
+          format: table
+          output: trivy-table.txt
+          exit-code: "0"
+          severity: CRITICAL,HIGH,MEDIUM,LOW
+
+      - name: Post or update PR comment with Trivy table
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: trivy-container-scan
+          path: trivy-table.txt
+          recreate: true
