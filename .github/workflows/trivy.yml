@@ -15,7 +15,7 @@ jobs:
           docker build -t devsecops-python-app:${{ github.sha }} .
 
       - name: Run Trivy Vulnerability Scanner
-        uses: aquasecurity/trivy-action@0.36.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: 'devsecops-python-app:${{ github.sha }}'
           format: 'table'
