@@ -1,0 +1,37 @@
+name: Peachycloudsecurity Trivy non-blocking (SARIF upload)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  trivy_non_blocking:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Local Docker Image
+        run: |
+          cd vulnerable-python-app
+          docker build -t devsecops-python-app:${{ github.sha }} .
+
+      - name: Run Trivy (SARIF, do not fail job)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: devsecops-python-app:${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          exit-code: "0"
+          severity: CRITICAL,HIGH,MEDIUM,LOW
+
+      - name: Upload SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-container
