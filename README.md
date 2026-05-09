@@ -4,7 +4,7 @@ Vulnerable Code For Security Engineering &amp; Security Championship Training
 
 **Original Code [peachycloudsecurity/vulnerable-demo-app](https://github.com/peachycloudsecurity/vulnerable-demo-app)**
 
-This repository contains multi-language applications (Go & Python) built to demonstrate **OWASP Kubernetes Top 10 (2025)** risks and common web vulnerabilities. It is intended for security research, CTFs, and DevSecOps training.
+This repository contains multi-language applications (Python) built to demonstrate **OWASP Kubernetes Top 10 (2025)** risks and common web vulnerabilities. It is intended for security research, CTFs, and DevSecOps training.
 
 ---
 
