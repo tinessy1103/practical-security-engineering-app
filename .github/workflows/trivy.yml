@@ -1,0 +1,24 @@
+name: PeachycloudSecurity Container Security Scan
+
+on: [push]
+
+jobs:
+  trivy-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Local Docker Image
+        run: |
+          cd vulnerable-python-app
+          docker build -t devsecops-python-app:${{ github.sha }} .
+
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: 'devsecops-python-app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
